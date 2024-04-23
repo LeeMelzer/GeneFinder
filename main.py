@@ -1,6 +1,6 @@
-# function to query the database and return gene names with sequences
 
-def getsequence(fileName): 
+# change getSequence to query database and return a list of stored strings
+def getSequence(fileName): 
     with open(fileName) as f:
         myList = f.read().splitlines()
 
@@ -37,8 +37,8 @@ def getAlignmentScore(sequenceLength, count):
 
 
 def main(): 
-    storedString = getsequence("cv19spike.txt")
-    inputString = getsequence("input.txt")
+    storedString = getSequence("cv19spike.txt")
+    inputString = getSequence("input.txt")
     alignmentScore = alignSequences(storedString, inputString)
 
     print (f"The alignment score is {alignmentScore}")
