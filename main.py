@@ -1,40 +1,45 @@
+import os
 import sqlite
-db = sqlite.Database()
 
-def createDatabase():
-    # call getSequencesToStore function
-    # sequences will be a list of tuples to pass to database
-    sequences = getSequencesToStore("cv19spike.txt")
+def createDatabase(db):
+    sequences = getSequencesToStore()
     db.create_table()
     db.insert_sequences(sequences)
     db.commit()
 
-def updateDatabase():
-    sequences = getSequencesToStore("filename")
+def updateDatabase(db):
+    sequences = getSequencesToStore()
     db.insert_sequences(sequences)
     db.commit()
 
-def deleteDatabase():
-    pass
+def deleteDatabase(db):
+    db.close()
+    os.remove("storedSequences.db") 
 
-def getSequencesFromDatabase():
+def getSequencesFromDatabase(db):
     sequences = db.get_sequences()
     return sequences
 
-def testSequence():
-    testSequence = getTestSequence("input.txt")
-    storedSequences = getSequencesFromDatabase()
+def testSequence(db):
+    try:
+        testSequence = getTestSequence("input.txt")
+        storedSequences = getSequencesFromDatabase(db)
 
-    maxAlignmentScore = 0
-    species = ""
-    gene = ""
-    # iterate over storedStrings and take max alignment Score
-    # update species and gene accordingly
-    storedSequence = "ATCG"
-    alignmentScore = alignSequences(storedSequence, testSequence)
+        maxAlignmentScore = 0
+        species = ""
+        gene = ""
 
-    # return alignmentScore, species, and gene
-    print (f"The alignment score is {alignmentScore}")
+        for entry in storedSequences:
+            storedSequence = entry[2]
+            alignmentScore = alignSequences(storedSequence, testSequence)
+            if alignmentScore > maxAlignmentScore:
+                maxAlignmentScore = alignmentScore
+                species = entry[0]
+                gene = entry[1]
+
+        print(f"\nThe highest alignment score is {maxAlignmentScore} for {species} | {gene}")
+    except FileNotFoundError:
+        print("\nError: file \"input.txt\" not found. Please ensure input file is named properly\n")
 
 def getTestSequence(fileName): 
     with open(fileName) as f:
@@ -46,18 +51,36 @@ def getTestSequence(fileName):
 
     return string
 
-# add each entry to a tuple and append the tuple to sequences list
-# return the sequences list of tuples
-def getSequencesToStore(fileName):
-    sequences = []
-    currentEntry = ()
+def getSequencesToStore():
+    try:
+        sequences = []
+        tempList = []
+        
+        with open("dbSequences.txt") as f:
+            lines = f.read().splitlines()
 
-    with open(fileName) as f:
-        myList = f.read().splitlines()
+        sequence = ""
+        for line in lines:
+            if line:
+                if line[0] == ">":
+                    tempString = line[1:].split("|")
+                    tempList.append(tempString[0])
+                    tempList.append(tempString[1])
+                else:
+                    sequence += line
+            else:
+                tempList.append(sequence)
+                sequence = ""
+                entry = tuple(tempList)
+                tempList.clear()
+                sequences.append(entry)
 
-    # will insert spaces to signal stop entry and append to sequences
-
-    return sequences
+        tempList.append(sequence)
+        entry = tuple(tempList)
+        sequences.append(entry)
+        return sequences
+    except FileNotFoundError:
+        print("\nError: file \"dbSequences.txt\" not found. Please ensure input file is named properly\n")
 
 def alignSequences(storedString, inputString):
     count = 0
@@ -79,12 +102,16 @@ def alignSequences(storedString, inputString):
 
     return alignmentScore
 
-
 def getAlignmentScore(sequenceLength, count):
-    return (sequenceLength/count) * 100
+    return (count/sequenceLength) * 100
+
+def confirmDatabase(db):
+    test = db.check_table_exists()
+    return test
 
 def main(): 
     while True:
+        db = sqlite.Database()
         print("Please select an option:")
         print("1) Create a new database")
         print("2) Add sequence/sequences to current database")
@@ -94,35 +121,39 @@ def main():
         choice = input("")
 
         if choice == "1":
-            # include test if database already exists
-            createDatabase()
-            print()
-            print("Database successfully created!")
-            print()
+            if not confirmDatabase(db):
+                createDatabase(db)
+                print("\nDatabase successfully created!\n")
+            else:
+                print("\nError: database already exists!")
+                print("Please delete current database before creating another\n")
         elif choice == "2":
-            # include test if database already exists
-            updateDatabase()
-            print()
-            print("Database successfully updated!")
-            print()
+            if confirmDatabase(db):
+                updateDatabase(db)
+                print("\nDatabase successfully updated!\n")
+            else:
+                print("\nError: no database was found")
+                print("Please create a new database\n")
         elif choice == "3":
-            # include test if database already exists
-            deleteDatabase()
-            print()
-            print("Database successfully deleted")
-            print()
+            if confirmDatabase(db):
+                deleteDatabase(db)
+                print("\nDatabase successfully deleted\n")
+            else:
+                print("\nError: no database was found")
+                print("Please create a new database\n")
         elif choice == "4":
-            # include test for database present with error message if not
-            testSequence()
-            print()
+            if confirmDatabase(db):
+                testSequence(db)
+                print()
+            else:
+                print("\nError: no database was found")
+                print("Please create a new database\n")
         elif choice == "5":
             print("Goodbye!")
             break
         else:
-            print()
-            print(f"{choice} is not a valid command")
-            print("Please select an option from the menu")
-            print()
+            print(f"\n{choice} is not a valid command")
+            print("Please select an option from the menu\n")
 
 if __name__== "__main__" :
     main()
