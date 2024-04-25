@@ -1,3 +1,5 @@
+# Local Smith-Waterman alignment tool
+
 import os
 import sqlite
 
