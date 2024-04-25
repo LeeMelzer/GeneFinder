@@ -24,7 +24,6 @@ class Database(object):
     def get_sequences(self):
         self.cursor.execute('''SELECT * FROM sequences''')
         sequences = self.cursor.fetchall()
-        #print(self.cursor.fetchall())
         return sequences
 
     def check_table_exists(self):
@@ -35,6 +34,3 @@ class Database(object):
                 return True
         except sqlite3.OperationalError:
             return False
-
-    def delete_database(self):
-        pass
