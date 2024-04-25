@@ -13,14 +13,18 @@ class Database(object):
         self.connection.close()
     
     def create_table(self):
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS sequences(species text, \
-                                                                    gene text PRIMARY KEY,
-                                                                    sequence text)''')
+        self.cursor.execute('''CREATE TABLE IF NOT EXISTS sequences(
+                            species text, 
+                            gene text,
+                            sequence text)''')
         
-    def insert_sequences(self):
-        # open file and ierate ?
-        self.cursor.execute('''INSERT INTO sequences VALUES (species, gene, sequence)''')
+    def insert_sequences(self, sequences):
+        self.cursor.executemany("INSERT INTO sequences VALUES(?,?,?)", sequences)
         
     def get_sequences(self):
         sequences = self.cursor.execute('''SELECT * FROM sequences''')
+        #print(self.cursor.fetchall())
         return sequences
+
+    def delete_database(self):
+        pass

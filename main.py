@@ -1,6 +1,42 @@
+import sqlite
+db = sqlite.Database()
 
-# change getSequence to query database and return a list of stored strings
-def getSequence(fileName): 
+def createDatabase():
+    # call getSequencesToStore function
+    # sequences will be a list of tuples to pass to database
+    sequences = getSequencesToStore("cv19spike.txt")
+    db.create_table()
+    db.insert_sequences(sequences)
+    db.commit()
+
+def updateDatabase():
+    sequences = getSequencesToStore("filename")
+    db.insert_sequences(sequences)
+    db.commit()
+
+def deleteDatabase():
+    pass
+
+def getSequencesFromDatabase():
+    sequences = db.get_sequences()
+    return sequences
+
+def testSequence():
+    testSequence = getTestSequence("input.txt")
+    storedSequences = getSequencesFromDatabase()
+
+    maxAlignmentScore = 0
+    species = ""
+    gene = ""
+    # iterate over storedStrings and take max alignment Score
+    # update species and gene accordingly
+    storedSequence = "ATCG"
+    alignmentScore = alignSequences(storedSequence, testSequence)
+
+    # return alignmentScore, species, and gene
+    print (f"The alignment score is {alignmentScore}")
+
+def getTestSequence(fileName): 
     with open(fileName) as f:
         myList = f.read().splitlines()
 
@@ -10,6 +46,18 @@ def getSequence(fileName):
 
     return string
 
+# add each entry to a tuple and append the tuple to sequences list
+# return the sequences list of tuples
+def getSequencesToStore(fileName):
+    sequences = []
+    currentEntry = ()
+
+    with open(fileName) as f:
+        myList = f.read().splitlines()
+
+    # will insert spaces to signal stop entry and append to sequences
+
+    return sequences
 
 def alignSequences(storedString, inputString):
     count = 0
@@ -35,13 +83,46 @@ def alignSequences(storedString, inputString):
 def getAlignmentScore(sequenceLength, count):
     return (sequenceLength/count) * 100
 
-
 def main(): 
-    storedString = getSequence("cv19spike.txt")
-    inputString = getSequence("input.txt")
-    alignmentScore = alignSequences(storedString, inputString)
+    while True:
+        print("Please select an option:")
+        print("1) Create a new database")
+        print("2) Add sequence/sequences to current database")
+        print("3) Delete current database")
+        print("4) Test input sequence for species and gene identification")
+        print("5) Exit")
+        choice = input("")
 
-    print (f"The alignment score is {alignmentScore}")
+        if choice == "1":
+            # include test if database already exists
+            createDatabase()
+            print()
+            print("Database successfully created!")
+            print()
+        elif choice == "2":
+            # include test if database already exists
+            updateDatabase()
+            print()
+            print("Database successfully updated!")
+            print()
+        elif choice == "3":
+            # include test if database already exists
+            deleteDatabase()
+            print()
+            print("Database successfully deleted")
+            print()
+        elif choice == "4":
+            # include test for database present with error message if not
+            testSequence()
+            print()
+        elif choice == "5":
+            print("Goodbye!")
+            break
+        else:
+            print()
+            print(f"{choice} is not a valid command")
+            print("Please select an option from the menu")
+            print()
 
 if __name__== "__main__" :
     main()
