@@ -37,6 +37,7 @@ def testSequence(db):
                 species = entry[0]
                 gene = entry[1]
 
+        maxAlignmentScore = round(maxAlignmentScore, 2)
         print(f"\nThe highest alignment score is {maxAlignmentScore} for {species} | {gene}")
     except FileNotFoundError:
         print("\nError: file \"input.txt\" not found. Please ensure input file is named properly\n")
