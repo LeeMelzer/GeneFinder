@@ -18,7 +18,7 @@ Alignment scores will be displayed as follows:
     2) gene separated by a single pipe "|"
 - Example: >Streptococcus pyogenes|heme-binding protein Shr
 
-Example files "input.txt" and "dbSequences.txt" have been provided in the repository for reference. Note that two these files will need to be deleted before use.
+Example files "input.txt" and "dbSequences.txt" have been provided in the repository for reference. Note that these two files will need to be deleted before use.
 
 # Future Updates
 This is version 1.0. The next version will have a simple gui for ease of use with expanded functionality.  
