@@ -1,5 +1,5 @@
 # GeneFinder
-GeneFinder is a tool used to perform Smith-Waterman alignments of user-input gene sequences and stored sequences in a local database. The input sequence (see formatting below) will be aligned with every sequence in the database and the highest alignment score achieved will be returned, along with the corresponding species and gene. 
+GeneFinder is a tool used to identify the gene and species of an unknown gene sequence by performing Smith-Waterman alignments of the unknown sequence with known sequences stored in a local database. The input sequence (see formatting below) will be aligned with every sequence in the database and the highest alignment score achieved will be returned, along with the corresponding species and gene. 
 Note that a high alignment score does not necessarily prove a relationship. Before use, users will need to provide a single test sequence in a text file named "input.txt" and comparator sequences in a text file named "dbSequences.txt". These two files need to be stored in the same directory as GeneFinder.
 Upon launch, the user will be met with a top menu pictured below:
 
